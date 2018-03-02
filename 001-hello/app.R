@@ -4,7 +4,7 @@ library(shiny)
 ui <- fluidPage(
 
   # App title ----
-  titlePanel("Hello Shiny!"),
+  titlePanel("Felix seine Shiny App"),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -17,8 +17,13 @@ ui <- fluidPage(
                   label = "Number of bins:",
                   min = 1,
                   max = 50,
-                  value = 30)
-
+                  value = 30),
+    
+      # selectInput button
+      selectInput(inputId = "dataset", 
+                  label = "Select Data", 
+                  choices = c("faithful", "iris"))
+        
     ),
 
     # Main panel for displaying outputs ----
@@ -44,12 +49,22 @@ server <- function(input, output) {
   # 2. Its output type is a plot
   output$distPlot <- renderPlot({
 
-    x    <- faithful$waiting
+    if(input$dataset == "faithful"){
+      x    <- faithful$waiting 
+      xlabel <- "Waiting time to next eruption (in mins)"
+      histmain <- "Histogram of waiting times"
+    } 
+    if(input$dataset == "iris"){
+      x <- iris$Sepal.Length
+      xlabel <- "Sepal length [in cm]"
+      histmain <- "Iris flower sepal length"
+    }
+    
     bins <- seq(min(x), max(x), length.out = input$bins + 1)
 
-    hist(x, breaks = bins, col = "#75AADB", border = "white",
-         xlab = "Waiting time to next eruption (in mins)",
-         main = "Histogram of waiting times")
+    hist(x, breaks = bins, col = "#75AADB", border = "white", 
+         xlab=xlabel, 
+         main = histmain)
 
     })
 
@@ -57,3 +72,4 @@ server <- function(input, output) {
 
 # Create Shiny app ----
 shinyApp(ui = ui, server = server)
+
